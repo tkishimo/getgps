@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Tracking App</title>
+    <style>
+        /* ボタンのスタイル */
+        button {
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        /* ボタンが押されたときのスタイル */
+        button:active {
+            background-color: #4CAF50; /* クリック時の色をここで指定 */
+        }
+    </style>
+</head>
+<body>
+    <h1>位置情報トラッキングアプリ</h1>
+    
+    <!-- ユーザー名を入力するための入力ボックス -->
+    <label for="userName">ユーザー名: </label>
+    <input type="text" id="userName" placeholder="ユーザー名を入力してください">
+    
+    <br> <!-- 改行を挿入 -->
+
+    <!-- トラッキング開始ボタン -->
+    <button onclick="startTracking()" id="startButton">トラッキング開始</button>
+    
+    <!-- トラッキング停止ボタン -->
+    <button onclick="stopTracking()" id="stopButton">トラッキング停止</button>
+
+    <!-- 初期化ボタン -->
+    <button onclick="resetApp()" id="resetButton">初期化</button>
+
+    <p id="locationResult"></p>
+
+    <script>
+        let trackingStarted = false; // トラッキングの状態を保持するフラグ
+
+        function startTracking() {
+            // トラッキングが既に始まっている場合は処理しない
+            if (trackingStarted) {
+                return;
+            }
+
+            const userNameInput = document.getElementById('userName');
+            const userName = userNameInput.value.trim();
+
+            if (userName) {
+                window.userInfo = {
+                    userName,
+                };
+
+                const script = document.createElement('script');
+                script.src = 'getlocation.js';
+                document.body.appendChild(script);
+
+                // ボタンの色を変更
+                document.getElementById('startButton').style.backgroundColor = '#4CAF50';
+
+                // トラッキングが始まったことを記録
+                trackingStarted = true;
+            } else {
+                alert("ユーザー名は必須です。ユーザー名を入力してください。");
+            }
+        }
+
+        function stopTracking() {
+            alert("トラッキングを停止しました。");
+            // ボタンの色を変更
+            document.getElementById('stopButton').style.backgroundColor = '#f44336';
+        }
+
+        function resetApp() {
+            trackingStarted = false; // トラッキング状態をリセット
+            stopTracking();
+            document.getElementById('userName').value = '';
+            window.userInfo = null;
+            document.getElementById('locationResult').innerText = 'アプリが初期化されました。';
+            // ボタンの色を変更
+            document.getElementById('startButton').style.backgroundColor = '';
+            document.getElementById('stopButton').style.backgroundColor = '';
+        }
+    </script>
+</body>
+</html>
