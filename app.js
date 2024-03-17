@@ -77,7 +77,7 @@ app.get('/api/sGMail', async function(req, res, next) {
     msg.from = fromEmail;
     msg.subject = '🧍テスト🧍';
     msg.text = 'this is a test email';
-    console.log(mail);
+    console.log(msg);
     // SendGrid APIを使用してメールを送信
     sgMail.send(msg)
     .then(() => {
