@@ -1,3 +1,4 @@
+create sequence serial start with 1;
 create table public.get_location (
   id serial not null
   , userid character varying(255) not null

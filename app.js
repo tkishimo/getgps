@@ -62,25 +62,22 @@ app.get('/api/token', async function(req, res, next) {
 });
 
 app.get('/api/sGMail', async function(req, res, next) {
-    const userId    = req.query.userId;
+    const toName    = req.query.toName;
+    const toEmail   = req.query.toEmail;
     const fromEmail = req.query.fromEmail;
-    let currentTimestamp = req.query.timestamp;
     const sgMail = require('@sendgrid/mail');
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);    
 
-    // もしAPI呼び出し時に日時が渡されていればそれを使用
-    if (!currentTimestamp) {
-        currentTimestamp = new Date().toISOString();
-    }
-
     // 送信者、宛先、件名、メッセージ本文を指定
-    const msg = {
-        to: userId, // 宛先のメールアドレス
-        from: fromEmail, // 送信者のメールアドレス
-        subject: 'てすとです🐲🐲🐲🐲', // 件名
-        text: 'Hello, this is a test email sent via SendGrid API.', // メッセージ本文
-    };
-
+    const msg = {};
+    const toMail = {};
+    toMail.name = toName;
+    toMail.email = toEmail;
+    msg.to = toMail;
+    msg.from = fromEmail;
+    msg.subject = '🧍テスト🧍';
+    msg.text = 'this is a test email';
+    
     // SendGrid APIを使用してメールを送信
     sgMail.send(msg)
     .then(() => {
