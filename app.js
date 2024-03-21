@@ -65,6 +65,8 @@ app.get('/api/sGMail', async function(req, res, next) {
     const toName    = req.query.toName;
     const toEmail   = req.query.toEmail;
     const fromEmail = req.query.fromEmail;
+    const subject  = req.query.subject;
+    const mailText = req.query.mailText;
     const sgMail = require('@sendgrid/mail');
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);    
 
@@ -75,8 +77,8 @@ app.get('/api/sGMail', async function(req, res, next) {
     toMail.email = toEmail;
     msg.to = toMail;
     msg.from = fromEmail;
-    msg.subject = '🧍テスト🧍';
-    msg.text = 'this is a test email';
+    msg.subject = subject;
+    msg.text = mailText;
     console.log(msg);
     // SendGrid APIを使用してメールを送信
     sgMail.send(msg)
