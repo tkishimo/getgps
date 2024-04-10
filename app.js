@@ -90,6 +90,72 @@ app.get('/api/sGMail', async function(req, res, next) {
     });
 });
 
+// HTTPリクエストを行う関数を定義します
+async function sendHttpRequest(requestUrl, options) {
+    return new Promise((resolve, reject) => {
+        const http = require('https');
+        const options = {
+            method: 'GET',
+        };
+        const httpreq = http.request(requestUrl, options, (response) => {
+            let data = '';
+            response.on('data', (chunk) => {
+                data += chunk;
+            });
+            response.on('end', () => {
+                resolve(data); // データを返します
+            });
+        });
+
+        httpreq.on('error', (error) => {
+            reject(error); // エラーを返します
+        });
+
+        httpreq.end();
+    });
+}
+
+app.get('/api/campaign', async function(req, res, next) {
+    const userId = req.query.userId;
+    const token = req.query.token;
+    let currentTimestamp = req.query.timestamp;
+
+    try {
+        sql = `select distinct c.name,c.message,r.name cusname,r.email
+            from get_location g join campaign c on ST_DWithin(g.location,c.c_location,c.within)
+            join customer r on r.partyid=g.userid
+            where g.timestamp between c.from_date and c.to_date
+            and cast(eventdate as date)=current_date order by name desc`;
+        const { rows } = await pool.query(sql);
+        
+        for (const row of rows) {
+            const toName  = row.cusname;
+            const toEmail = row.email;
+            const fromEmail = process.env.FROMEMAIL;
+            const subject  = row.name;
+            const mailText = row.message;
+            const queryParams = new URLSearchParams({ toName, toEmail, fromEmail, subject, mailText });
+            const apiEndpoint = process.env.APIENDPOINT;
+            const requestUrl = `${apiEndpoint}?${queryParams}`;
+            console.log(queryParams);
+        
+            try {
+                const responseData = await sendHttpRequest(requestUrl);
+                console.log(responseData);
+                res.write(`Email sent to ${toEmail}\n`);
+            } catch (error) {
+                console.error(`Failed to send email to ${toEmail}:`, error);
+                res.write(`Failed to send email to ${toEmail}\n`);
+            }
+        }
+        
+        res.end('All emails sent.');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
 app.listen(3001, () => {
     console.log("Server running on port 3001");
 })
