@@ -1,0 +1,8 @@
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send HTTP request
+        uses: tyrrrz/action-http-request@master
+        with:
+          url: https://example.com
