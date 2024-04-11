@@ -6,4 +6,4 @@ jobs:
       - name: Send HTTP request
         uses: tyrrrz/action-http-request@master
         with:
-          url: vars.CALL_URL
+          url: ${{ vars.SERVICE_URL }}
